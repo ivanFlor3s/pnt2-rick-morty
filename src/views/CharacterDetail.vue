@@ -1,17 +1,26 @@
 <script setup lang="ts">
 import { getCharacter } from '@/utils/api-provider';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { CharacterResult } from '../interfaces/api-response';
+import CharacterNavigator  from '../components/CharacterNavigator.vue';
 import { RouterLink } from 'vue-router';
+
 interface Props {
     id: number;
 }
 const props = defineProps<Props>()
 const character = ref<CharacterResult>();
 
-getCharacter(props.id).then((data) => {
-    character.value = data;
+ getCharacter(props.id).then((data) => {
+     character.value = data;
+ });
+
+watch(() => props.id, (id:number) => {
+    getCharacter(id).then((data) => {
+        character.value = data;
+    });
 });
+
 </script>
 <template>
     <div class="card mt-4 overflow-hidden" v-if="character">
@@ -39,4 +48,5 @@ getCharacter(props.id).then((data) => {
             </div>
         </div>
     </div>
+    <CharacterNavigator :current-id="props.id" class="mt-3"></CharacterNavigator>
 </template>
