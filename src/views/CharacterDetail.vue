@@ -25,7 +25,7 @@ watch(() => props.id, (id:number) => {
 <template>
     <div class="card mt-4 overflow-hidden" v-if="character">
         <div class="card-header">
-            <p class="mb-0">Character</p>
+            <p class="mb-0">Character {{ character.id }}</p>
             <h1 style="font-size: 3rem;">{{ character.name }}</h1>
         </div>
         <div class="d-flex flex-column flex-md-row">
