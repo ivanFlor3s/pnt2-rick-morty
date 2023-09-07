@@ -30,7 +30,7 @@ getCharacter(props.id).then((data) => {
                 <hr>
                 <h4>Episodios</h4>
                 <div class="d-flex flex-wrap gap-2"> 
-                    <RouterLink v-for="(ep, index) in character.episode" :to="'peli'"
+                    <RouterLink v-for="(ep, index) in character.episode" :to="{ name: 'episode', params:{ id: ep.split('/').pop()} }"
                         :key="index"
                         class="btn btn-outline-primary">
                     {{ ep.split('/').pop() }}
