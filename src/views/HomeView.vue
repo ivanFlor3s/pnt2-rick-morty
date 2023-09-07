@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import TheWelcome from '../components/TheWelcome.vue'
+import ApiTable from '@/components/ApiTable.vue';
+
 </script>
 
 <template>
   <main>
-    <TheWelcome />
+    <h2>Tabla de personajes</h2>
+    <hr>
+    <ApiTable />
   </main>
 </template>
