@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
 import AppNavbar from './components/AppNavbar.vue';
+import { RouterView } from 'vue-router'
+
+
 </script>
 
 <template>
@@ -11,5 +13,4 @@ import AppNavbar from './components/AppNavbar.vue';
 </template>
 
 <style scoped>
-
 </style>
