@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { getCharacters } from '../utils/api-provider';
 import type { Result } from '@/interfaces/api-response';
+import { RouterLink } from 'vue-router';
 
 const characters = ref<Result[]>([])
 
@@ -24,7 +25,11 @@ getCharacters().then((data) => {
             <tr v-for="character in characters" :key="character.id">
                 <th scope="row">{{ character.id }}</th>
                 <td>{{ character.name }}</td>
-                <td> buscar </td>
+                <td> 
+                    <RouterLink :to="{name: 'character', params:{ id: character.id}}"  class="text-primary">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </RouterLink>  
+                </td>
             </tr>
         </tbody>
     </table>
