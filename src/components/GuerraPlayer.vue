@@ -1,6 +1,10 @@
 <template>
     <div class="card">
+      
         <div class="card-body">
+            <div v-if="player.hasTurn" class="end-0 m-2 position-absolute spinner-grow text-primary top-0 " role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
             <h5 class="card-title">{{ player.name }}</h5>
             <p class="card-text">{{ player.stamina }}</p>
             <img class="m-3" v-show="player.stamina > 10000"
