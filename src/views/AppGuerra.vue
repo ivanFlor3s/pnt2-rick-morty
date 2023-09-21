@@ -10,9 +10,11 @@
             El ganador es
         </h1>
     </div> -->
-    <button class="btn btn-success" @click="warStore.randomizeNewPlayer()"> Randomize New Player </button>
-    <GuerraPlayer v-for="player,i in warStore.$state.players" :player="player" :id="i" :key="i" >
-    </GuerraPlayer>
+    <button class="btn btn-success mb-3" @click="warStore.randomizeNewPlayer()"> Randomize New Player </button>
+    <div id="war-container" class="d-flex flex-wrap gap-3 ">
+        <GuerraPlayer v-for="player,i in warStore.$state.players" :player="player" :id="i" :key="i" >
+        </GuerraPlayer>
+    </div>
     <h1>
         {{ doubleValue }}
     </h1>
