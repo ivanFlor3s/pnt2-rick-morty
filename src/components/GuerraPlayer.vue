@@ -19,6 +19,7 @@ import { type Player } from '../interfaces/player';
 
 interface Props {
     player: Player
+    id: number
 }
 
 const props = defineProps<Props>();
