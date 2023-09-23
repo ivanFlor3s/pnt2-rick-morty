@@ -21,20 +21,17 @@
   >
     <GuerraPlayer
       v-for="(player, i) in warStore.$state.players"
-      
       :class="{
         'animate__animated animate__pulse animate__infinite cursor-pointer':
-        warStore.isRunning && !player.onStrike && warStore.oneStriking
+        warStore.isRunning && !player.onStrike && warStore.oneStriking && player.stamina > 0
       }"
       :player="player"
       :id="i"
       :key="i"
+      @click="attack(player.name)"
     >
     </GuerraPlayer>
   </div>
-  <h1>
-    {{ doubleValue }}
-  </h1>
 </template>
 
 <script setup lang="ts">
@@ -49,6 +46,11 @@ const store = useCounterStore()
 const warStore = appWarStore()
 
 const doubleValue = computed(() => store.doubleCount)
+
+const attack = (targetName: string) => {
+  if(targetName === warStore.currentStriker?.name || !warStore.oneStriking) return;
+  warStore.attack(targetName)
+}
 
 onMounted(() => {})
 </script>

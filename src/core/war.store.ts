@@ -15,7 +15,7 @@ export const appWarStore = defineStore('war', {
         name: 'Jose',
         hasTurn: false,
         stamina: 100,
-        onStrike: false,
+        onStrike: false
       },
       {
         name: 'Pabloide',
@@ -23,11 +23,13 @@ export const appWarStore = defineStore('war', {
         onStrike: false,
         stamina: 100
       }
-    ],
+    ]
   }),
   getters: {
     isRunning: (state) => state.runningGame,
-    oneStriking: (state) => state.players.some(p => p.onStrike)
+    oneStriking: (state) => state.players.some((p) => p.onStrike),
+    currentPlayer: (state) => state.players.find((p) => p.hasTurn),
+    currentStriker: (state) => state.players.find((p) => p.onStrike)
   },
   actions: {
     heal(index: number) {
@@ -39,14 +41,24 @@ export const appWarStore = defineStore('war', {
         ]
       })
     },
-    attack(source: number, target: number) {
+    attack(targetName: string) {
+      const striker = this.players.find((p) => p.onStrike) as Player
+
       this.$patch({
         players: [
-          ...this.players.map((player, i) =>
-            i == target ? { ...player, stamina: player.stamina - 20 } : player
-          )
+          ...this.players.map((player) => {
+            let result = player;
+            if (player.name == striker.name) {
+              result = { ...player, onStrike: false, hasTurn: false }
+            }
+            if (player.name == targetName) {
+              result = { ...player, stamina: player.stamina - 20 }
+            }
+            return result
+          })
         ]
       })
+      this.nextPlayer(this.$state.players.findIndex(player => player.name == striker.name) + 1 )
     },
     randomizeNewPlayer() {
       const randomName = generateName()
@@ -72,14 +84,11 @@ export const appWarStore = defineStore('war', {
       const index = sourceIndexPlayer % this.$state.players.length
       this.$patch({
         players: [
-          ...this.players.map((p, i) =>
-            i == index ? { ...p, hasTurn: true } : p
-          )
+          ...this.players.map((p, i) => (i == index ? { ...p, hasTurn: true } : p ))
         ]
       })
     },
-    setStriker(id: number) {
-      console.log('setean striker', id)
+    startAttack(id: number) {
       this.$patch({
         players: [
           ...this.players.map((player, i) =>
