@@ -15,7 +15,7 @@
                     <span>Cucharaso</span>
                 </button>
                 <button class="btn">
-                    <i class="fa-solid fa-house-medical text-success fs-2"></i>
+                    <i class="fa-solid fa-house-medical text-success fs-2" @click="heal()"></i>
                 </button>
             </div>
         </div>
@@ -41,6 +41,9 @@ onMounted(() => {
 
 const startAttack = () => {
     warStore.startAttack(props.id)
+}
+const heal = () => {
+    warStore.heal(props.id)
 }
 
 </script>

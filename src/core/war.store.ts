@@ -37,10 +37,11 @@ export const appWarStore = defineStore('war', {
       this.$patch({
         players: [
           ...this.players.map((player, i) =>
-            i == index ? { ...player, stamina: player.stamina + 20 } : player
+            i == index ? { ...player, stamina: player.stamina + 20, hasTurn: false } : player
           )
         ]
       })
+      this.nextPlayer(index + 1)
     },
     attack(targetName: string) {
       const striker = this.players.find((p) => p.onStrike) as Player
