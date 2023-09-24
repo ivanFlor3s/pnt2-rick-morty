@@ -29,7 +29,8 @@ export const appWarStore = defineStore('war', {
     isRunning: (state) => state.runningGame,
     oneStriking: (state) => state.players.some((p) => p.onStrike),
     currentPlayer: (state) => state.players.find((p) => p.hasTurn),
-    currentStriker: (state) => state.players.find((p) => p.onStrike)
+    currentStriker: (state) => state.players.find((p) => p.onStrike),
+    oneSurvivor: (state) => state.players.filter((p) => p.stamina > 0).length == 1,
   },
   actions: {
     heal(index: number) {
@@ -81,6 +82,10 @@ export const appWarStore = defineStore('war', {
       })
     },
     nextPlayer(sourceIndexPlayer: number) {
+      if(this.oneSurvivor){
+        this.players = this.players.map((p) => ({ ...p, hasTurn: false }))
+        return;
+      }
       const index = sourceIndexPlayer % this.$state.players.length
       this.$patch({
         players: [
