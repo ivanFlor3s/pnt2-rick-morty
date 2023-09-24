@@ -48,7 +48,10 @@ const warStore = appWarStore()
 const doubleValue = computed(() => store.doubleCount)
 
 const attack = (targetName: string) => {
-  if(targetName === warStore.currentStriker?.name || !warStore.oneStriking) return;
+  const attackToSelf = targetName === warStore.currentStriker?.name;
+  const noOneAtacking = !warStore.oneStriking;
+  const targetEmptyStamina = warStore.$state.players.find(player => player.name === targetName)?.stamina === 0;
+  if( attackToSelf || noOneAtacking || targetEmptyStamina ) return;
   warStore.attack(targetName)
 }
 
