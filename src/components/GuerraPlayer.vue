@@ -40,7 +40,7 @@ onMounted(() => {
 })
 
 const startAttack = () => {
-    warStore.setStriker(props.id)
+    warStore.startAttack(props.id)
 }
 
 </script>
