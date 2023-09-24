@@ -87,6 +87,12 @@ export const appWarStore = defineStore('war', {
         return;
       }
       const index = sourceIndexPlayer % this.$state.players.length
+
+      if(this.players[index].stamina <= 0){
+        this.nextPlayer(index + 1)
+        return;
+      }
+
       this.$patch({
         players: [
           ...this.players.map((p, i) => (i == index ? { ...p, hasTurn: true } : p ))
