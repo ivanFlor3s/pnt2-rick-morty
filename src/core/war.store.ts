@@ -1,10 +1,12 @@
 import type { Player } from '@/interfaces/player'
 import { defineStore } from 'pinia'
 import { generateName } from '@/utils/names-gen'
+import { WarActionType } from './war-actions.enum'
 
 interface State {
   players: Player[]
   runningGame: boolean
+  actionExecuting: WarActionType | null
 }
 
 export const appWarStore = defineStore('war', {
@@ -15,52 +17,78 @@ export const appWarStore = defineStore('war', {
         name: 'Jose',
         hasTurn: false,
         stamina: 100,
-        onStrike: false
+        executingAction: false,
+        hasSwapped: false
       },
       {
         name: 'Pabloide',
         hasTurn: false,
-        onStrike: false,
-        stamina: 100
+        executingAction: false,
+        stamina: 100,
+        hasSwapped: false
       }
-    ]
+    ],
+    actionExecuting: null
   }),
   getters: {
     isRunning: (state) => state.runningGame,
-    oneStriking: (state) => state.players.some((p) => p.onStrike),
+    oneStriking: (state) => state.players.some((p) => p.executingAction),
     currentPlayer: (state) => state.players.find((p) => p.hasTurn),
-    currentStriker: (state) => state.players.find((p) => p.onStrike),
-    oneSurvivor: (state) => state.players.filter((p) => p.stamina > 0).length == 1,
+    currentStriker: (state) => state.players.find((p) => p.executingAction),
+    oneSurvivor: (state) =>
+      state.players.filter((p) => p.stamina > 0).length == 1,
+    executing: (state) => state.actionExecuting
   },
   actions: {
     heal(index: number) {
       this.$patch({
         players: [
           ...this.players.map((player, i) =>
-            i == index ? { ...player, stamina: player.stamina + 20, hasTurn: false } : player
+            i == index
+              ? { ...player, stamina: player.stamina + 20, hasTurn: false }
+              : player
           )
         ]
       })
       this.nextPlayer(index + 1)
     },
     attack(targetName: string) {
-      const striker = this.players.find((p) => p.onStrike) as Player
-
+      const striker = this.players.find((p) => p.executingAction) as Player
+      const victim = this.players.find((p) => p.name == targetName) as Player
+      const swapping = this.executing == WarActionType.SWAP
       this.$patch({
         players: [
           ...this.players.map((player) => {
-            let result = player;
+            let result = player
+            //Striker
             if (player.name == striker.name) {
-              result = { ...player, onStrike: false, hasTurn: false }
+              // if(this.executing == WarActionType.SWAP){
+
+              // }
+              result = {
+                ...player,
+                executingAction: false,
+                hasTurn: false,
+                stamina:
+                  swapping
+                    ? victim.stamina
+                    : player.stamina,
+                hasSwapped: swapping
+              }
             }
+            //Victim
             if (player.name == targetName) {
-              result = { ...player, stamina: player.stamina - 20 }
+              result = { ...player, stamina: swapping ? striker.stamina : player.stamina - 20 }
             }
             return result
           })
         ]
       })
-      this.nextPlayer(this.$state.players.findIndex(player => player.name == striker.name) + 1 )
+
+      this.nextPlayer(
+        this.$state.players.findIndex((player) => player.name == striker.name) +
+          1
+      )
     },
     randomizeNewPlayer() {
       const randomName = generateName()
@@ -68,7 +96,8 @@ export const appWarStore = defineStore('war', {
         name: randomName,
         stamina: randomName.includes('Messi') ? 100000 : 20,
         hasTurn: false,
-        onStrike: false
+        executingAction: false,
+        hasSwapped: false
       }
       this.$patch({
         players: [...this.players, newPlayer]
@@ -83,30 +112,46 @@ export const appWarStore = defineStore('war', {
       })
     },
     nextPlayer(sourceIndexPlayer: number) {
-      if(this.oneSurvivor){
+      if (this.oneSurvivor) {
         this.players = this.players.map((p) => ({ ...p, hasTurn: false }))
-        return;
+        return
       }
       const index = sourceIndexPlayer % this.$state.players.length
 
-      if(this.players[index].stamina <= 0){
+      if (this.players[index].stamina <= 0) {
         this.nextPlayer(index + 1)
-        return;
+        return
       }
 
       this.$patch({
         players: [
-          ...this.players.map((p, i) => (i == index ? { ...p, hasTurn: true } : p ))
+          ...this.players.map((p, i) =>
+            i == index ? { ...p, hasTurn: true } : p
+          )
         ]
       })
     },
-    startAttack(id: number) {
+    startAction(id: number) {
       this.$patch({
         players: [
           ...this.players.map((player, i) =>
-            i == id ? { ...player, onStrike: true } : player
+            i == id ? { ...player, executingAction: true } : player
           )
         ]
+      })
+    },
+    startSwap(id: number) {
+      this.$patch({
+        players: [
+          ...this.players.map((player, i) =>
+            i == id ? { ...player, executingAction: true } : player
+          )
+        ]
+      })
+    },
+    setAction(action: WarActionType) {
+      this.$patch({
+        actionExecuting: action
       })
     }
   }

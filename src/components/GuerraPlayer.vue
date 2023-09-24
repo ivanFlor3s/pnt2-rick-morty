@@ -5,7 +5,7 @@
                 <span class="visually-hidden">Loading...</span>
             </div>
             <h5 class="card-title">{{ player.name }}</h5>
-            <p class="card-text">{{ player.stamina }} / {{ totalStamina }}</p>
+            <p class="card-text">Stamina: {{ player.stamina }}</p>
             <StaminaBar class="mb-4" :current="player.stamina" :total="totalStamina" ></StaminaBar>
             <img class="m-3" v-show="player.stamina > 10000"
                 src="https://media.tenor.com/qsvNX-PZDLkAAAAC/simpsons-jewels.gif" alt="homer">
@@ -17,7 +17,15 @@
                 <button class="btn">
                     <i class="fa-solid fa-house-medical text-success fs-2" @click="heal()"></i>
                 </button>
+                <button class="btn" v-if="!player.hasSwapped">
+                    <i class="fa-solid fa-rotate fs-2" style="color: blueviolet;" @click="startSwap()"></i>
+                </button>
+
+                <div class="text-muted"  v-if="player.hasSwapped">
+                    <span>Ya swapeo</span>
+                </div>
             </div>
+            
         </div>
     </div>
 </template>
@@ -26,6 +34,7 @@ import { type Player } from '../interfaces/player';
 import { onMounted, ref } from 'vue';
 import StaminaBar from './StaminaBar.vue'
 import { appWarStore } from '@/core';
+import { WarActionType } from '../core/war-actions.enum';
 interface Props {
     player: Player
     id: number
@@ -40,7 +49,12 @@ onMounted(() => {
 })
 
 const startAttack = () => {
-    warStore.startAttack(props.id)
+    warStore.startAction(props.id)
+    warStore.setAction(WarActionType.ATTACK)
+}
+const startSwap = () => {
+    warStore.startSwap(props.id)
+    warStore.setAction(WarActionType.SWAP)
 }
 const heal = () => {
     warStore.heal(props.id)

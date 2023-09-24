@@ -23,7 +23,7 @@
       v-for="(player, i) in warStore.$state.players"
       :class="{
         'animate__animated animate__pulse animate__infinite cursor-pointer':
-        warStore.isRunning && !player.onStrike && warStore.oneStriking && player.stamina > 0
+        warStore.isRunning && !player.executingAction && warStore.oneStriking && player.stamina > 0
       }"
       :player="player"
       :id="i"
