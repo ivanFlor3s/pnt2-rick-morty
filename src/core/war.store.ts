@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { generateName } from '@/utils/names-gen'
 import { WarActionType } from './war-actions.enum'
 import { LogFactory } from '@/utils/logs-factory'
+import { valueBetweenRange } from '@/utils/value-between'
 
 interface State {
   players: Player[]
@@ -20,14 +21,18 @@ export const appWarStore = defineStore('war', {
         hasTurn: false,
         stamina: 100,
         executingAction: false,
-        hasSwapped: false
+        hasSwapped: false,
+        force: [20,30],
+        healPower: [30,40]
       },
       {
         name: 'Pabloide',
         hasTurn: false,
         executingAction: false,
         stamina: 100,
-        hasSwapped: false
+        hasSwapped: false,
+        force: [20,30],
+        healPower: [30,40]
       }
     ],
     actionExecuting: null,
@@ -103,12 +108,17 @@ export const appWarStore = defineStore('war', {
     },
     randomizeNewPlayer() {
       const randomName = generateName()
+      const HEALTH_RANGE = [20,100]
+      const FORCE_RANGE = [30,100]
+      const HP_RANGE = [30,100]
       const newPlayer: Player = {
         name: randomName,
-        stamina: randomName.includes('Messi') ? 100000 : 20,
+        stamina: randomName.includes('Messi') ? 100000 : valueBetweenRange(HP_RANGE),
         hasTurn: false,
         executingAction: false,
-        hasSwapped: false
+        hasSwapped: false,
+        healPower: [HEALTH_RANGE[0], valueBetweenRange(HEALTH_RANGE)],
+        force: [FORCE_RANGE[0], valueBetweenRange(FORCE_RANGE)],
       }
       this.$patch({
         players: [...this.players, newPlayer]
