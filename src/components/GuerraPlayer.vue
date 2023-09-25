@@ -29,7 +29,7 @@
       </div>
       <StaminaBar
         class="my-4"
-        :current="player.stamina"
+        :current="Math.max(player.stamina,0)"
         :total="totalStamina"
       ></StaminaBar>
       <img
