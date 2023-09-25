@@ -189,6 +189,9 @@ export const appWarStore = defineStore('war', {
       this.$patch({
         actionExecuting: action
       })
+    },
+    reset(){
+      this.$reset()
     }
   }
 })
