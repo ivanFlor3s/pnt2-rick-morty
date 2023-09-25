@@ -4,6 +4,10 @@ import { generateName } from '@/utils/names-gen'
 import { WarActionType } from './war-actions.enum'
 import { LogFactory } from '@/utils/logs-factory'
 import { valueBetweenRange } from '@/utils/value-between'
+import JSConfetti from 'js-confetti'
+
+
+const jsConfetti = new JSConfetti()
 
 interface State {
   players: Player[]
@@ -69,6 +73,7 @@ export const appWarStore = defineStore('war', {
           )
         ]
       })
+      jsConfetti.addConfetti({emojis: ['💖'], confettiNumber: 12})
       this.nextPlayer(index + 1)
     },
     execute(targetName: string) {
@@ -108,7 +113,7 @@ export const appWarStore = defineStore('war', {
         ],
         logs: [...this.logs, log]
       })
-
+      jsConfetti.addConfetti({emojis: swapping ? ['🔄'] : ['🥄','💥'], confettiNumber: 12 })
       this.nextPlayer(
         this.$state.players.findIndex((player) => player.name == striker.name) +
           1

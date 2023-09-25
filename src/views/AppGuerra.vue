@@ -43,17 +43,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed } from 'vue'
-import JSConfetti from 'js-confetti'
+import { onMounted } from 'vue'
 import GuerraPlayer from '@/components/GuerraPlayer.vue'
-import { useCounterStore, appWarStore } from '@/core'
+import { appWarStore } from '@/core'
 
-const jsConfetti = new JSConfetti()
 
-const store = useCounterStore()
 const warStore = appWarStore()
 
-const doubleValue = computed(() => store.doubleCount)
 
 const attack = (targetName: string) => {
   const attackToSelf = targetName === warStore.currentStriker?.name;
