@@ -15,7 +15,7 @@
   >
     Randomize New Player
   </button>
-  <div class="d-flex gap-4 align-items-start">
+  <div class="d-flex gap-4 align-items-start mb-5">
     <div
       id="war-container"
       class="d-flex flex-wrap gap-3 flex-fill"
@@ -35,7 +35,7 @@
     </div>
     <div v-if="warStore.showLogs">
       <h3>Logs</h3>
-      <ul class="list-group" style="max-height: 350px; overflow-y: auto;">
+      <ul class="list-group" style="max-height: 350px; overflow-y: auto; min-width: 300px;">
         <li class="list-group-item" v-for="(elem, i) in warStore.logs" :key="i" >{{elem}}</li>
       </ul>
     </div>
