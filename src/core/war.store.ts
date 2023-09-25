@@ -22,8 +22,8 @@ export const appWarStore = defineStore('war', {
         stamina: 100,
         executingAction: false,
         hasSwapped: false,
-        force: [20,30],
-        healPower: [30,40]
+        force: [20, 30],
+        healPower: [30, 40]
       },
       {
         name: 'Pabloide',
@@ -31,8 +31,8 @@ export const appWarStore = defineStore('war', {
         executingAction: false,
         stamina: 100,
         hasSwapped: false,
-        force: [20,30],
-        healPower: [30,40]
+        force: [20, 30],
+        healPower: [30, 40]
       }
     ],
     actionExecuting: null,
@@ -50,17 +50,23 @@ export const appWarStore = defineStore('war', {
   },
   actions: {
     heal(index: number) {
+      const amount = valueBetweenRange(this.players[index].healPower)
       this.$patch({
         players: [
           ...this.players.map((player, i) =>
             i == index
-              ? { ...player, stamina: player.stamina + 20, hasTurn: false }
+              ? { ...player, stamina: player.stamina + amount, hasTurn: false }
               : player
           )
         ],
         logs: [
           ...this.logs,
-          LogFactory.createLog(WarActionType.HEAL, this.players[index])
+          LogFactory.createLog(
+            WarActionType.HEAL,
+            this.players[index],
+            undefined,
+            amount
+          )
         ]
       })
       this.nextPlayer(index + 1)
@@ -70,9 +76,11 @@ export const appWarStore = defineStore('war', {
       const victim = this.players.find((p) => p.name == targetName) as Player
       const swapping = this.executing == WarActionType.SWAP
 
+      const amount = valueBetweenRange(striker.force)
+
       const log = swapping
         ? LogFactory.createLog(WarActionType.SWAP, striker, victim)
-        : LogFactory.createLog(WarActionType.ATTACK, striker, victim, 20)
+        : LogFactory.createLog(WarActionType.ATTACK, striker, victim, amount)
 
       this.$patch({
         players: [
@@ -92,7 +100,7 @@ export const appWarStore = defineStore('war', {
             if (player.name == targetName) {
               result = {
                 ...player,
-                stamina: swapping ? striker.stamina : player.stamina - 20
+                stamina: swapping ? striker.stamina : player.stamina - amount
               }
             }
             return result
@@ -108,17 +116,19 @@ export const appWarStore = defineStore('war', {
     },
     randomizeNewPlayer() {
       const randomName = generateName()
-      const HEALTH_RANGE = [20,100]
-      const FORCE_RANGE = [30,100]
-      const HP_RANGE = [30,100]
+      const HEALTH_RANGE = [20, 100]
+      const FORCE_RANGE = [30, 100]
+      const HP_RANGE = [30, 100]
       const newPlayer: Player = {
         name: randomName,
-        stamina: randomName.includes('Messi') ? 100000 : valueBetweenRange(HP_RANGE),
+        stamina: randomName.includes('Messi')
+          ? 100000
+          : valueBetweenRange(HP_RANGE),
         hasTurn: false,
         executingAction: false,
         hasSwapped: false,
         healPower: [HEALTH_RANGE[0], valueBetweenRange(HEALTH_RANGE)],
-        force: [FORCE_RANGE[0], valueBetweenRange(FORCE_RANGE)],
+        force: [FORCE_RANGE[0], valueBetweenRange(FORCE_RANGE)]
       }
       this.$patch({
         players: [...this.players, newPlayer]
