@@ -2,11 +2,13 @@ import type { Player } from '@/interfaces/player'
 import { defineStore } from 'pinia'
 import { generateName } from '@/utils/names-gen'
 import { WarActionType } from './war-actions.enum'
+import { LogFactory } from '@/utils/logs-factory'
 
 interface State {
   players: Player[]
   runningGame: boolean
   actionExecuting: WarActionType | null
+  logs: string[]
 }
 
 export const appWarStore = defineStore('war', {
@@ -28,7 +30,8 @@ export const appWarStore = defineStore('war', {
         hasSwapped: false
       }
     ],
-    actionExecuting: null
+    actionExecuting: null,
+    logs: []
   }),
   getters: {
     isRunning: (state) => state.runningGame,
@@ -37,7 +40,8 @@ export const appWarStore = defineStore('war', {
     currentStriker: (state) => state.players.find((p) => p.executingAction),
     oneSurvivor: (state) =>
       state.players.filter((p) => p.stamina > 0).length == 1,
-    executing: (state) => state.actionExecuting
+    executing: (state) => state.actionExecuting,
+    showLogs: (state) => state.logs.length > 0
   },
   actions: {
     heal(index: number) {
@@ -48,41 +52,48 @@ export const appWarStore = defineStore('war', {
               ? { ...player, stamina: player.stamina + 20, hasTurn: false }
               : player
           )
+        ],
+        logs: [
+          ...this.logs,
+          LogFactory.createLog(WarActionType.HEAL, this.players[index])
         ]
       })
       this.nextPlayer(index + 1)
     },
-    attack(targetName: string) {
+    execute(targetName: string) {
       const striker = this.players.find((p) => p.executingAction) as Player
       const victim = this.players.find((p) => p.name == targetName) as Player
       const swapping = this.executing == WarActionType.SWAP
+
+      const log = swapping
+        ? LogFactory.createLog(WarActionType.SWAP, striker, victim)
+        : LogFactory.createLog(WarActionType.ATTACK, striker, victim, 20)
+
       this.$patch({
         players: [
           ...this.players.map((player) => {
             let result = player
             //Striker
             if (player.name == striker.name) {
-              // if(this.executing == WarActionType.SWAP){
-
-              // }
               result = {
                 ...player,
                 executingAction: false,
                 hasTurn: false,
-                stamina:
-                  swapping
-                    ? victim.stamina
-                    : player.stamina,
-                hasSwapped: swapping
+                stamina: swapping ? victim.stamina : player.stamina,
+                hasSwapped: swapping ? true : player.hasSwapped
               }
             }
             //Victim
             if (player.name == targetName) {
-              result = { ...player, stamina: swapping ? striker.stamina : player.stamina - 20 }
+              result = {
+                ...player,
+                stamina: swapping ? striker.stamina : player.stamina - 20
+              }
             }
             return result
           })
-        ]
+        ],
+        logs: [...this.logs, log]
       })
 
       this.nextPlayer(
